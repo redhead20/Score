@@ -1,0 +1,22 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none;overscroll-behavior:none}button{border:0;border-radius:10px;background:#0a84ff;color:white;padding:10px 13px;font:inherit;cursor:pointer;white-space:nowrap}button.muted{background:#38383b}button.selected{background:#ff9f0a;color:#000}button:disabled{opacity:.4}#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:auto;overscroll-behavior:contain;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}#welcome{text-align:center;margin:auto;padding:24px;max-width:450px}#welcome h1{font-size:30px}#welcome p{color:#aaa;line-height:1.5}.emoji{font-size:65px}#sheet{position:relative;flex-shrink:0;background:#fff;touch-action:pan-x pan-y}#sheet[hidden],#toolbar[hidden],#pageInfo[hidden]{display:none!important}#sheet canvas{position:absolute;inset:0;display:block;width:100%;height:100%}#inkCanvas{pointer-events:none}#sheet.drawing #inkCanvas{pointer-events:auto;touch-action:none}#toolbar{position:fixed;z-index:10;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 8px) 10px 9px;background:rgba(26,26,27,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:opacity .2s}#toolbar.collapsed{opacity:0;pointer-events:none}.topline,.controls{display:flex;align-items:center;gap:7px}.topline{justify-content:space-between;margin-bottom:7px}.controls{justify-content:center;flex-wrap:wrap}#title{max-width:65vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ddd}#zoomValue{min-width:45px;text-align:center;font-variant-numeric:tabular-nums}#pageInfo{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 12px);left:50%;transform:translateX(-50%);z-index:8;background:rgba(30,30,30,.82);border-radius:50px;padding:5px 14px;font-size:14px;pointer-events:none}#pageInfo.collapsed{opacity:0}@media(max-width:700px){button{font-size:13px;padding:8px 10px}.controls{gap:5px}}
+
+#zoomDial{width:110px;accent-color:#0a84ff}.pen-control{display:flex;align-items:center;gap:5px;font-size:13px}.pen-control input{width:80px;accent-color:#0a84ff}.swatches{display:flex;gap:7px;align-items:center}.swatch{width:29px;height:29px;padding:0;border:2px solid #888;border-radius:50%;background:var(--ink)}.swatch.chosen{outline:2px solid white;outline-offset:2px}#sheet.pinching,#sheet.pinching #inkCanvas{touch-action:none}
+
+.tools-toggle{position:fixed;z-index:12;top:calc(env(safe-area-inset-top) + 12px);right:calc(env(safe-area-inset-right) + 12px);box-shadow:0 3px 16px #0008;background:#0a84ff}
+.tools-toggle[hidden]{display:none!important}
+#toolbar{padding-right:100px;max-height:75vh;overflow-y:auto}
+#toolbar.collapsed{opacity:0;pointer-events:none;transform:translateY(-8px)}
+#zoomDial{touch-action:pan-x}
+@media(max-width:700px){#toolbar{padding-right:10px;padding-top:calc(env(safe-area-inset-top) + 57px)}}
+
+#welcome{width:100%;max-width:1100px;text-align:left;margin:20px auto;align-self:flex-start}
+#welcome .emoji{font-size:38px}#welcome h1{margin:6px 0}#welcome p{max-width:650px}
+#stage:has(#welcome:not([hidden])){display:block;overflow-y:auto}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:16px;margin:22px 0 40px}
+.library-card{background:#1d1d1f;border:1px solid #38383b;border-radius:14px;overflow:hidden;min-width:0}
+.library-open{width:100%;padding:0;background:transparent;border-radius:0;display:block}
+.library-open img,.library-placeholder{width:100%;height:220px;object-fit:contain;background:#303034;display:block}
+.library-placeholder{display:grid;place-items:center;font-size:44px}
+.library-meta{padding:11px;min-width:0}.library-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.library-actions{display:flex;gap:6px;margin-top:10px}.library-actions button{font-size:12px;flex:1;padding:8px 4px}
+.library-actions .delete{background:#573033}#libraryStatus{font-size:13px;color:#aaa}
