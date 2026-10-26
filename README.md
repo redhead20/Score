@@ -40,3 +40,6 @@ The Save PDF action is now on each PDF thumbnail card on the home screen. Import
 
 ## v7 full-screen Fit
 The Fit button and initial opening now use the full iPad viewport (100vw × 100dvh) with zero stage padding. The PDF is scaled to the largest size that displays the **entire page**, preserving its aspect ratio and without cropping or stretching. If the page aspect ratio differs from the iPad's, there will necessarily be unused space along one axis; zoom beyond Fit to fill both axes, then pan to see the clipped areas. The toolbar stays at the bottom as an overlay.
+
+## v8
+The Close button is fixed at the upper-left while a PDF is open, independent of the collapsible bottom drawing toolbar. It is hidden on the library home screen.

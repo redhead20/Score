@@ -11,12 +11,13 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" href="./apple-touch-icon.png">
-<link rel="stylesheet" href="./style.css?v=7-edge-fit">
+<link rel="stylesheet" href="./style.css?v=8-fixed-close">
 </head>
 <body>
+<button id="closeBtn" class="fixed-close muted" type="button" hidden aria-label="Close PDF and return to library">✕ Close</button>
 <button id="toolsToggle" class="tools-toggle" type="button" hidden aria-controls="toolbar" aria-expanded="false" aria-label="Show drawing toolbar">✎ Tools</button>
 <footer id="toolbar" hidden>
- <div class="topline"><button id="closeBtn" class="muted" title="Close PDF">✕ Close</button><span id="title"></span><button id="openAnother" class="muted">Open</button></div>
+ <div class="topline"><span id="title"></span><button id="openAnother" class="muted">Open</button></div>
  <div class="controls">
   <button id="zoomOut" class="muted" aria-label="Zoom out">−</button><input id="zoomDial" type="range" min="50" max="500" value="100" step="5" aria-label="Zoom scale"><output id="zoomValue">100%</output><button id="zoomIn" class="muted" aria-label="Zoom in">+</button><button id="fitBtn" class="muted">Fit</button>
   <button id="drawBtn" class="muted" aria-pressed="false">✎ Draw</button><label class="pen-control">Thickness <input id="penSize" type="range" min="1" max="12" value="3" aria-label="Pen thickness"><output id="penSizeValue">3</output></label>
@@ -38,6 +39,6 @@
 <input type="file" id="file" accept=".pdf,application/pdf" hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script type="module" src="./js/app.js?v=7-edge-fit"></script>
+<script type="module" src="./js/app.js?v=8-fixed-close"></script>
 </body>
 </html>

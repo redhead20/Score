@@ -19,7 +19,7 @@ function showControls(pageOnly=false){info.classList.remove('collapsed');clearTi
 function pick(){$('file').click()}
 $('openBtn').onclick=pick;$('openAnother').onclick=pick;
 async function requestWake(){try{if('wakeLock'in navigator)wake=await navigator.wakeLock.request('screen')}catch{}}
-async function close(){++loadVersion;await viewer.close();source=null;filename='';key='';annotations.active=null;annotations.pointer=null;annotations.setEnabled(false);annotations.setNotes({});zoom.value=1;$('zoomValue').textContent='100%';$('zoomDial').value=100;$('drawBtn').classList.remove('selected');$('drawBtn').setAttribute('aria-pressed','false');$('drawBtn').textContent='✎ Draw';toolbar.hidden=true;toggle.hidden=true;setTools(false);info.hidden=true;$('welcome').hidden=false;clearTimeout(flashTimer);try{await wake?.release()}catch{}wake=null;await renderLibrary()}
+async function close(){++loadVersion;await viewer.close();source=null;filename='';key='';annotations.active=null;annotations.pointer=null;annotations.setEnabled(false);annotations.setNotes({});zoom.value=1;$('zoomValue').textContent='100%';$('zoomDial').value=100;$('drawBtn').classList.remove('selected');$('drawBtn').setAttribute('aria-pressed','false');$('drawBtn').textContent='✎ Draw';toolbar.hidden=true;toggle.hidden=true;$('closeBtn').hidden=true;setTools(false);info.hidden=true;$('welcome').hidden=false;clearTimeout(flashTimer);try{await wake?.release()}catch{}wake=null;await renderLibrary()}
 $('closeBtn').onclick=close;
 async function openDocument(bytes,name,docKey){
  const version=++loadVersion;
@@ -29,7 +29,7 @@ async function openDocument(bytes,name,docKey){
   source=bytes;filename=name;key=docKey;annotations.setNotes(notes);annotations.setPage(viewer.page);annotations.setEnabled(false);
   zoom.value=1;$('zoomValue').textContent='100%';$('zoomDial').value=100;
   $('drawBtn').classList.remove('selected');$('drawBtn').setAttribute('aria-pressed','false');$('drawBtn').textContent='✎ Draw';
-  $('title').textContent=name.replace(/\\.pdf$/i,'');$('welcome').hidden=true;toolbar.hidden=false;toggle.hidden=false;
+  $('title').textContent=name.replace(/\\.pdf$/i,'');$('welcome').hidden=true;toolbar.hidden=false;toggle.hidden=false;$('closeBtn').hidden=false;
   setTools(false);updateHistory();info.hidden=false;info.textContent=`${viewer.page} / ${viewer.doc.numPages}`;
   viewer.render();showControls();requestWake();
  }catch(err){console.error(err);alert('Could not open this PDF. Please try another file.')}
