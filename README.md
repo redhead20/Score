@@ -37,3 +37,6 @@ The Save PDF action is now on each PDF thumbnail card on the home screen. Import
 - At zoom above 100%, drag with one finger to pan around the whole page (including edges and corners); pinch with two fingers to zoom around the pinch center.
 - In Draw mode, Apple Pencil writes and a finger pans. Mouse/trackpad scrolling works for navigation.
 - Page turning by tapping the edges is still available at fit zoom.
+
+## v7 full-screen Fit
+The Fit button and initial opening now use the full iPad viewport (100vw × 100dvh) with zero stage padding. The PDF is scaled to the largest size that displays the **entire page**, preserving its aspect ratio and without cropping or stretching. If the page aspect ratio differs from the iPad's, there will necessarily be unused space along one axis; zoom beyond Fit to fill both axes, then pan to see the clipped areas. The toolbar stays at the bottom as an overlay.
