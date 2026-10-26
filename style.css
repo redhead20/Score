@@ -20,3 +20,14 @@
 .library-meta{padding:11px;min-width:0}.library-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .library-actions{display:flex;gap:6px;margin-top:10px}.library-actions button{font-size:12px;flex:1;padding:8px 4px}
 .library-actions .delete{background:#573033}#libraryStatus{font-size:13px;color:#aaa}
+
+/* v5: bottom controls, true scrollable zoom, and small fit margins */
+#stage{padding:8px;align-items:safe center;justify-content:safe center;touch-action:pan-x pan-y}
+#sheet{margin:auto;touch-action:pan-x pan-y}
+#toolbar{top:auto;bottom:0;left:0;right:0;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);padding-right:12px;max-height:min(55vh,350px);overflow-y:auto;transform-origin:bottom center}
+#toolbar.collapsed{transform:translateY(10px)}
+.tools-toggle{top:auto;bottom:calc(env(safe-area-inset-bottom) + 12px);right:calc(env(safe-area-inset-right) + 12px)}
+body:has(#toolbar:not(.collapsed):not([hidden])) .tools-toggle{bottom:min(calc(55vh + 10px),calc(350px + 10px))}
+#pageInfo{bottom:auto;top:calc(env(safe-area-inset-top) + 12px)}
+#sheet.drawing #inkCanvas{touch-action:pan-x pan-y}
+@media(max-width:700px){#toolbar{padding:10px 8px calc(env(safe-area-inset-bottom) + 10px)}}

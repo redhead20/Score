@@ -30,3 +30,10 @@ An iPad-friendly sheet music PDF reader, with page turning, zoom, Apple Pencil d
 
 ## v4 Library
 The Save PDF action is now on each PDF thumbnail card on the home screen. Imported PDFs and thumbnail previews are stored locally in IndexedDB, and handwriting is saved in localStorage. Close the PDF to return to the library and export an annotated copy. Removing a library item does not delete previously exported files. Existing PDFs from older versions must be reimported once to appear as thumbnails, because previous versions did not store the original PDF bytes.
+
+## v5 viewing improvements
+- Bottom-mounted drawing toolbar with floating Tools button.
+- PDF fit uses available viewport with a small margin.
+- At zoom above 100%, drag with one finger to pan around the whole page (including edges and corners); pinch with two fingers to zoom around the pinch center.
+- In Draw mode, Apple Pencil writes and a finger pans. Mouse/trackpad scrolling works for navigation.
+- Page turning by tapping the edges is still available at fit zoom.
