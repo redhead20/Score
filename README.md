@@ -43,3 +43,9 @@ The Fit button and initial opening now use the full iPad viewport (100vw × 100d
 
 ## v8
 The Close button is fixed at the upper-left while a PDF is open, independent of the collapsible bottom drawing toolbar. It is hidden on the library home screen.
+
+## v9 Home Screen icon
+The iPad Home Screen icon uses the existing `apple-touch-icon.png` file in the **repository root**. Keep that file alongside `index.html`; this ZIP intentionally does **not** include or overwrite your custom icon. The HTML also uses that file as the favicon, and the manifest references it for installable browsers. If the icon in GitHub has another filename, rename it to `apple-touch-icon.png` or update the three references to match. For best iPad results, use a square PNG at least 180×180 pixels (ideally 512×512), with the artwork already framed as desired. After deploying, remove the previous Home Screen shortcut and add the site again from Safari to refresh iPadOS's cached icon.
+
+## v10 bundled app icons
+This ZIP includes the supplied artwork as `apple-touch-icon.png` (180x180), plus 192x192 and 512x512 PWA icons. Upload all files from inside `Swipe-v10` to the GitHub Pages publishing root. To update an existing iPad Home Screen icon, delete the old shortcut and add it again in Safari.
