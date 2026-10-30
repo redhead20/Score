@@ -11,7 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest?v=10">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=10">
 <link rel="icon" type="image/png" href="./apple-touch-icon.png?v=10">
-<link rel="stylesheet" href="./style.css?v=10">
+<link rel="stylesheet" href="./style.css?v=12">
 </head>
 <body>
 <button id="closeBtn" class="fixed-close muted" type="button" hidden aria-label="Close PDF and return to library">✕ Close</button>
@@ -32,13 +32,13 @@
  </div>
 </footer>
 <main id="stage">
- <section id="welcome"><div class="emoji">🎼</div><h1>Score Library</h1><p>Your imported sheet music is saved in this browser. Tap a thumbnail to open it, or save an annotated copy using the Save PDF button on its card.</p><button id="openBtn">+ Import PDF</button><p id="libraryStatus" role="status"></p><div id="libraryGrid" class="library-grid" aria-label="Imported PDFs"></div></section>
+ <section id="welcome"><div class="emoji">🎼</div><h1>Score Library</h1><p>Your imported sheet music is saved in this browser. Tap a thumbnail to open it, or save an annotated copy using the Save PDF button on its card.</p><div class="library-header"><button id="openBtn">+ Import PDF</button><button id="newFolderBtn" class="muted" type="button">+ New Folder</button></div><nav id="folderNav" class="folder-nav" aria-label="Library folders"></nav><p id="libraryStatus" role="status"></p><div id="libraryGrid" class="library-grid" aria-label="Imported PDFs"></div></section>
  <div id="sheet" hidden><canvas id="pdfCanvas"></canvas><canvas id="inkCanvas"></canvas></div>
 </main>
 <div id="pageInfo" hidden aria-live="polite"></div>
 <input type="file" id="file" accept=".pdf,application/pdf" hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script type="module" src="./js/app.js?v=10"></script>
+<script type="module" src="./js/app.js?v=12"></script>
 </body>
 </html>

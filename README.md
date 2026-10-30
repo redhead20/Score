@@ -49,3 +49,9 @@ The iPad Home Screen icon uses the existing `apple-touch-icon.png` file in the *
 
 ## v10 bundled app icons
 This ZIP includes the supplied artwork as `apple-touch-icon.png` (180x180), plus 192x192 and 512x512 PWA icons. Upload all files from inside `Swipe-v10` to the GitHub Pages publishing root. To update an existing iPad Home Screen icon, delete the old shortcut and add it again in Safari.
+
+## v11 Recently viewed sorting
+The library sorts scores by **most recently opened first**. Opening a score records a `lastViewed` timestamp in IndexedDB, so it moves to the front when you return to the home screen. Scores never opened remain ordered by import date. Existing documents migrate automatically without losing stored PDF bytes or annotations. Re-importing the same document preserves its previous viewing timestamp until it is opened again.
+
+## v12 — Folders
+Create folders from the library, open a folder to see its scores, and use **Move to Folder** on an existing score to organize it. Choose **All Scores** to view every imported PDF. Rename or delete a folder from inside it; deleting a folder moves its PDFs back to All Scores rather than deleting them. PDFs retain their annotations, saved pages, and recently-viewed order when moved. Folder names and assignments are saved in IndexedDB on the same device/browser as the PDF library. This version upgrades the IndexedDB database from v1 to v2 without deleting existing documents.

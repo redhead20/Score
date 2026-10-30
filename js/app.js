@@ -3,7 +3,7 @@ import {Annotations} from './annotations.js';
 import {PDFViewer} from './pdf-viewer.js';
 import {Zoom} from './zoom.js';
 import {exportAnnotated} from './export.js';
-import {listDocuments,getDocument,putDocument,deleteDocument,thumbnail} from './library.js';
+import {listDocuments,getDocument,putDocument,markDocumentViewed,deleteDocument,thumbnail,listFolders,addFolder,renameFolder,moveDocument,removeFolder} from './library.js';
 const $=id=>document.getElementById(id);
 const stage=$('stage'),sheet=$('sheet'),toolbar=$('toolbar'),info=$('pageInfo'),toggle=$('toolsToggle');
 let toolsOpen=false;
@@ -12,6 +12,7 @@ toggle.onclick=()=>setTools(!toolsOpen);
 function updateHistory(){ $('undoBtn').disabled=!annotations.getStrokes().length;$('redoBtn').disabled=!annotations.canRedo() }
 
 let source=null,filename='',key='',wake=null,flashTimer=null,loadVersion=0;
+let activeFolder=null;
 const annotations=new Annotations($('inkCanvas'),sheet,()=>{if(key)writeJSON(key+':notes',annotations.notes);updateHistory()});
 const viewer=new PDFViewer({stage,sheet,canvas:$('pdfCanvas'),annotations,onReady:()=>{},onPage:(n,total)=>{info.textContent=`${n} / ${total}`;if(key)writeJSON(key+':page',n);updateHistory()}});
 let zoomAnchor=null;const zoom=new Zoom(value=>{viewer.setZoom(value,zoomAnchor);zoomAnchor=null;$('zoomValue').textContent=Math.round(value*100)+'%';$('zoomDial').value=Math.round(value*100);showControls()});
@@ -32,13 +33,44 @@ async function openDocument(bytes,name,docKey){
   $('title').textContent=name.replace(/\\.pdf$/i,'');$('welcome').hidden=true;toolbar.hidden=false;toggle.hidden=false;$('closeBtn').hidden=false;
   setTools(false);updateHistory();info.hidden=false;info.textContent=`${viewer.page} / ${viewer.doc.numPages}`;
   viewer.render();showControls();requestWake();
+  try{await markDocumentViewed(docKey)}catch(e){console.warn('Could not save recent viewing order',e)}
  }catch(err){console.error(err);alert('Could not open this PDF. Please try another file.')}
 }
 async function renderLibrary(){
- const grid=$('libraryGrid'),status=$('libraryStatus');grid.replaceChildren();
+ const grid=$('libraryGrid'),status=$('libraryStatus'),nav=$('folderNav');
+ grid.replaceChildren();nav.replaceChildren();
+ grid.parentElement.querySelectorAll('.folder-heading').forEach(e=>e.remove());
  try{
-  const docs=await listDocuments();status.textContent=docs.length?`${docs.length} saved PDF${docs.length===1?'':'s'} on this device`:'No PDFs imported yet.';
-  for(const doc of docs){
+  const [docs,folders]=await Promise.all([listDocuments(),listFolders()]);
+  if(activeFolder!==null&&!folders.some(f=>f.id===activeFolder))activeFolder=null;
+  const navButton=(name,id,count)=>{
+   const b=document.createElement('button');b.type='button';b.textContent=`${name} (${count})`;
+   b.classList.toggle('active',activeFolder===id);b.setAttribute('aria-current',activeFolder===id?'page':'false');
+   b.onclick=()=>{activeFolder=id;renderLibrary()};nav.append(b);
+  };
+  navButton('All Scores',null,docs.length);
+  for(const folder of folders)navButton('📁 '+folder.name,folder.id,docs.filter(d=>d.folderId===folder.id).length);
+  const selected=folders.find(f=>f.id===activeFolder);
+  if(selected){
+   const heading=document.createElement('div');heading.className='folder-heading';
+   const title=document.createElement('h2');title.textContent='📁 '+selected.name;
+   const rename=document.createElement('button');rename.textContent='Rename Folder';
+   rename.onclick=async()=>{
+    const value=prompt('New folder name:',selected.name);if(value===null)return;
+    const name=value.trim();if(!name)return alert('Enter a folder name.');
+    if(folders.some(f=>f.id!==selected.id&&f.name.toLowerCase()===name.toLowerCase()))return alert('A folder with that name already exists.');
+    try{await renameFolder(selected.id,name);await renderLibrary()}catch(e){alert('Could not rename folder.')}
+   };
+   const del=document.createElement('button');del.textContent='Delete Folder';
+   del.onclick=async()=>{
+    if(!confirm(`Delete folder "${selected.name}"? Its PDFs will be moved to All Scores, not deleted.`))return;
+    try{await removeFolder(selected.id);activeFolder=null;await renderLibrary()}catch(e){alert('Could not delete folder.')}
+   };
+   heading.append(title,rename,del);grid.before(heading);
+  }
+  const visible=activeFolder===null?docs:docs.filter(d=>d.folderId===activeFolder);
+  status.textContent=visible.length?`${visible.length} score${visible.length===1?'':'s'} · Most recently viewed first`:'No scores here yet. Use Move to Folder on a score to organize it.';
+  for(const doc of visible){
    const card=document.createElement('article');card.className='library-card';
    const open=document.createElement('button');open.className='library-open';open.type='button';open.setAttribute('aria-label',`Open ${doc.name}`);
    if(doc.preview){const img=document.createElement('img');img.src=doc.preview;img.alt=`First page of ${doc.name}`;open.append(img)}
@@ -48,18 +80,37 @@ async function renderLibrary(){
    const name=document.createElement('span');name.className='library-name';name.textContent=doc.name;name.title=doc.name;
    const actions=document.createElement('div');actions.className='library-actions';
    const save=document.createElement('button');save.textContent='Save PDF';save.onclick=async()=>{save.disabled=true;save.textContent='Saving…';try{const saved=await getDocument(doc.id);await exportAnnotated(saved.bytes,readJSON(doc.id+':notes',{}),saved.name)}catch(e){console.error(e);alert('Unable to save this PDF.')}finally{save.disabled=false;save.textContent='Save PDF'}};
+   const move=document.createElement('button');move.className='move';move.textContent='Move to Folder';
+   move.onclick=async()=>{
+    const choices=['0 — All Scores (no folder)',...folders.map((f,i)=>`${i+1} — ${f.name}`)];
+    const choice=prompt(`Move "${doc.name}" to which folder?\\n\\n${choices.join('\\n')}\\n\\nEnter a number:`,String(Math.max(0,folders.findIndex(f=>f.id===doc.folderId)+1)));
+    if(choice===null)return;
+    const number=Number(choice.trim());
+    if(!Number.isInteger(number)||number<0||number>folders.length||!choice.trim())return alert('Enter one of the listed folder numbers.');
+    try{await moveDocument(doc.id,number===0?null:folders[number-1].id);await renderLibrary()}catch(e){console.error(e);alert('Could not move the PDF.')}
+   };
    const remove=document.createElement('button');remove.className='delete';remove.textContent='Remove';remove.onclick=async()=>{if(!confirm(`Remove "${doc.name}" from this device?`))return;await deleteDocument(doc.id);await renderLibrary()};
-   actions.append(save,remove);meta.append(name,actions);card.append(open,meta);grid.append(card);
+   actions.append(save,move,remove);meta.append(name,actions);card.append(open,meta);grid.append(card);
   }
  }catch(e){console.error(e);status.textContent='Library unavailable. Check browser storage permissions.'}
 }
+$('newFolderBtn').onclick=async()=>{
+ const value=prompt('Name your new folder:');if(value===null)return;
+ const name=value.trim();if(!name)return alert('Enter a folder name.');
+ try{
+  const folders=await listFolders();
+  if(folders.some(f=>f.name.toLowerCase()===name.toLowerCase()))return alert('A folder with that name already exists.');
+  const folder=await addFolder(name);activeFolder=folder.id;await renderLibrary();
+ }catch(e){console.error(e);alert('Could not create folder.')}
+};
 $('file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];e.target.value='';if(!file)return;
  const status=$('libraryStatus');status.textContent='Importing PDF…';
  try{
   const bytes=await file.arrayBuffer(),id=documentKey(file);
   let preview='';try{preview=await thumbnail(bytes)}catch(e){console.warn('Thumbnail unavailable',e)}
-  await putDocument({id,name:file.name,bytes,preview,added:Date.now()});
+  const previous=await getDocument(id);
+  await putDocument({id,name:file.name,bytes,preview,added:previous?.added??Date.now(),lastViewed:previous?.lastViewed??0,folderId:previous?.folderId??activeFolder??null});
   await renderLibrary();await openDocument(bytes,file.name,id);
  }catch(e){console.error(e);status.textContent='Import failed. Your device may be out of storage.';alert('Unable to import PDF.')}
 });
