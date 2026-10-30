@@ -39,37 +39,50 @@ async function openDocument(bytes,name,docKey){
 async function renderLibrary(){
  const grid=$('libraryGrid'),status=$('libraryStatus'),nav=$('folderNav');
  grid.replaceChildren();nav.replaceChildren();
- grid.parentElement.querySelectorAll('.folder-heading').forEach(e=>e.remove());
  try{
   const [docs,folders]=await Promise.all([listDocuments(),listFolders()]);
   if(activeFolder!==null&&!folders.some(f=>f.id===activeFolder))activeFolder=null;
-  const navButton=(name,id,count)=>{
-   const b=document.createElement('button');b.type='button';b.textContent=`${name} (${count})`;
-   b.classList.toggle('active',activeFolder===id);b.setAttribute('aria-current',activeFolder===id?'page':'false');
-   b.onclick=()=>{activeFolder=id;renderLibrary()};nav.append(b);
-  };
-  navButton('All Scores',null,docs.length);
-  for(const folder of folders)navButton('📁 '+folder.name,folder.id,docs.filter(d=>d.folderId===folder.id).length);
   const selected=folders.find(f=>f.id===activeFolder);
-  if(selected){
-   const heading=document.createElement('div');heading.className='folder-heading';
+  if(!selected){
+   // Folders are full-size tiles on the home screen, not tabs.
+   for(const folder of folders){
+    const tile=document.createElement('article');tile.className='folder-tile';
+    const open=document.createElement('button');open.className='folder-tile-open';open.type='button';
+    const glyph=document.createElement('span');glyph.className='folder-glyph';glyph.textContent='📁';
+    const title=document.createElement('span');title.className='folder-tile-name';title.textContent=folder.name;
+    const count=document.createElement('span');count.className='folder-tile-count';
+    const n=docs.filter(d=>d.folderId===folder.id).length;count.textContent=`${n} score${n===1?'':'s'}`;
+    open.append(glyph,title,count);open.onclick=()=>{activeFolder=folder.id;renderLibrary()};
+    tile.append(open);nav.append(tile);
+   }
+  }else{
+   const back=document.createElement('button');back.type='button';back.className='folder-back';back.textContent='← All Folders';
+   back.onclick=()=>{activeFolder=null;renderLibrary()};
    const title=document.createElement('h2');title.textContent='📁 '+selected.name;
-   const rename=document.createElement('button');rename.textContent='Rename Folder';
+   const rename=document.createElement('button');rename.textContent='Rename';rename.type='button';
    rename.onclick=async()=>{
     const value=prompt('New folder name:',selected.name);if(value===null)return;
     const name=value.trim();if(!name)return alert('Enter a folder name.');
     if(folders.some(f=>f.id!==selected.id&&f.name.toLowerCase()===name.toLowerCase()))return alert('A folder with that name already exists.');
     try{await renameFolder(selected.id,name);await renderLibrary()}catch(e){alert('Could not rename folder.')}
    };
-   const del=document.createElement('button');del.textContent='Delete Folder';
+   const del=document.createElement('button');del.textContent='Delete Folder';del.type='button';
    del.onclick=async()=>{
-    if(!confirm(`Delete folder "${selected.name}"? Its PDFs will be moved to All Scores, not deleted.`))return;
+    if(!confirm(`Delete folder "${selected.name}"? Its PDFs will be returned to the home screen, not deleted.`))return;
     try{await removeFolder(selected.id);activeFolder=null;await renderLibrary()}catch(e){alert('Could not delete folder.')}
    };
-   heading.append(title,rename,del);grid.before(heading);
+   const heading=document.createElement('div');heading.className='folder-heading';
+   heading.append(back,title,rename,del);nav.append(heading);
   }
-  const visible=activeFolder===null?docs:docs.filter(d=>d.folderId===activeFolder);
-  status.textContent=visible.length?`${visible.length} score${visible.length===1?'':'s'} · Most recently viewed first`:'No scores here yet. Use Move to Folder on a score to organize it.';
+  const visible=selected?docs.filter(d=>d.folderId===selected.id):docs.filter(d=>!d.folderId);
+  status.textContent=selected
+   ? `${visible.length} score${visible.length===1?'':'s'} in ${selected.name} · Most recently viewed first`
+   : `${visible.length} unfiled score${visible.length===1?'':'s'} · ${folders.length} folder${folders.length===1?'':'s'}`;
+  if(!selected){
+   const title=document.createElement('h2');title.className='unfiled-heading';title.textContent='Scores outside folders';
+   nav.append(title);
+  }
+  if(!visible.length){const empty=document.createElement('p');empty.className='library-empty';empty.textContent=selected?'This folder is empty. Move a score here using Move to Folder.':'No scores outside folders. Import a PDF or open a folder.';grid.append(empty)}
   for(const doc of visible){
    const card=document.createElement('article');card.className='library-card';
    const open=document.createElement('button');open.className='library-open';open.type='button';open.setAttribute('aria-label',`Open ${doc.name}`);
@@ -82,8 +95,8 @@ async function renderLibrary(){
    const save=document.createElement('button');save.textContent='Save PDF';save.onclick=async()=>{save.disabled=true;save.textContent='Saving…';try{const saved=await getDocument(doc.id);await exportAnnotated(saved.bytes,readJSON(doc.id+':notes',{}),saved.name)}catch(e){console.error(e);alert('Unable to save this PDF.')}finally{save.disabled=false;save.textContent='Save PDF'}};
    const move=document.createElement('button');move.className='move';move.textContent='Move to Folder';
    move.onclick=async()=>{
-    const choices=['0 — All Scores (no folder)',...folders.map((f,i)=>`${i+1} — ${f.name}`)];
-    const choice=prompt(`Move "${doc.name}" to which folder?\\n\\n${choices.join('\\n')}\\n\\nEnter a number:`,String(Math.max(0,folders.findIndex(f=>f.id===doc.folderId)+1)));
+    const choices=['0 — Home (no folder)',...folders.map((f,i)=>`${i+1} — ${f.name}`)];
+    const choice=prompt(`Move "${doc.name}" to which folder?\n\n${choices.join('\n')}\n\nEnter a number:`,String(Math.max(0,folders.findIndex(f=>f.id===doc.folderId)+1)));
     if(choice===null)return;
     const number=Number(choice.trim());
     if(!Number.isInteger(number)||number<0||number>folders.length||!choice.trim())return alert('Enter one of the listed folder numbers.');

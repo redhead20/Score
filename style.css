@@ -65,3 +65,16 @@ html,body{width:100%;height:100%;height:100dvh}
 .library-actions button{min-width:calc(50% - 4px)}
 .library-actions .move{background:#304e67}
 .library-empty{color:#aaa;padding:18px 0}
+
+/* v13: actual folder tiles in the home library (not tab navigation) */
+.folder-home{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:16px;margin:18px 0 10px}
+.folder-tile{min-width:0;border:1px solid #45454d;border-radius:16px;background:#24252b;overflow:hidden}
+.folder-tile-open{width:100%;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:transparent;color:inherit;border:0;padding:15px;text-align:center}
+.folder-tile-open:active{background:#363840}
+.folder-glyph{font-size:52px;line-height:1.15}
+.folder-tile-name{font-size:16px;font-weight:650;overflow-wrap:anywhere}
+.folder-tile-count{font-size:12px;color:#bbb}
+.folder-heading{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.folder-heading h2{margin:0 auto 0 0}
+.folder-back{background:#34343a}
+.unfiled-heading{grid-column:1/-1;margin:12px 0 0;font-size:19px}
